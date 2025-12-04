@@ -1,7 +1,7 @@
 "use client"
 
 import { useState } from "react"
-import { Upload, message } from "antd"
+import { Upload, message, Input } from "antd"
 import { InboxOutlined } from "@ant-design/icons"
 import type { UploadProps } from "antd"
 import { validatePhoto } from "@/lib/validation/photo"
@@ -14,6 +14,7 @@ export default function PhotoUploadForm({
   onUploadSuccess?: () => void
 }) {
   const [uploading, setUploading] = useState(false)
+  const [title, setTitle] = useState("")
 
   const uploadProps: UploadProps = {
     name: "photo",
@@ -40,6 +41,9 @@ export default function PhotoUploadForm({
       try {
         const formData = new FormData()
         formData.append("photo", file as File)
+        if (title.trim()) {
+          formData.append("title", title.trim())
+        }
 
         const response = await fetch("/api/photos", {
           method: "POST",
@@ -53,6 +57,7 @@ export default function PhotoUploadForm({
 
         const data = await response.json()
         onSuccess?.(data)
+        setTitle("")
         onUploadSuccess?.()
       } catch (error) {
         message.error(
@@ -66,7 +71,19 @@ export default function PhotoUploadForm({
   }
 
   return (
-    <div className="w-full">
+    <div className="w-full space-y-4">
+      <div>
+        <label className="block text-sm font-medium text-gray-700 mb-2">
+          Photo Title (Optional)
+        </label>
+        <Input
+          placeholder="Enter a title for your photo"
+          value={title}
+          onChange={(e) => setTitle(e.target.value)}
+          disabled={uploading}
+          maxLength={100}
+        />
+      </div>
       <Dragger {...uploadProps} disabled={uploading}>
         <p className="ant-upload-drag-icon">
           <InboxOutlined />
