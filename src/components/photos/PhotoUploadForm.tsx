@@ -52,7 +52,6 @@ export default function PhotoUploadForm({
         }
 
         const data = await response.json()
-        message.success("Photo uploaded successfully!")
         onSuccess?.(data)
         onUploadSuccess?.()
       } catch (error) {

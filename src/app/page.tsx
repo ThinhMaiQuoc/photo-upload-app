@@ -1,12 +1,19 @@
-import { getServerSession } from "next-auth/next"
-import { authOptions } from "@/lib/auth"
+"use client"
+
+import { useSession } from "next-auth/react"
 import LogoutButton from "@/components/auth/LogoutButton"
 import PhotoUploadForm from "@/components/photos/PhotoUploadForm"
+import PhotoGrid from "@/components/photos/PhotoGrid"
+import { useState } from "react"
+import { Spin } from "antd"
 
-const isPreview = process.env.VERCEL_ENV === "preview"
+const isPreview = process.env.NEXT_PUBLIC_VERCEL_ENV === "preview"
 
-export default async function Home() {
-  const session = isPreview
+export default function Home() {
+  const { data: session, status } = useSession()
+  const [photoUpdateTrigger, setPhotoUpdateTrigger] = useState(0)
+
+  const effectiveSession = isPreview
     ? {
         user: {
           id: "preview-user",
@@ -15,28 +22,43 @@ export default async function Home() {
           image: null,
         },
       }
-    : await getServerSession(authOptions)
+    : session
+
+  if (status === "loading" && !isPreview) {
+    return (
+      <div className="min-h-screen bg-gray-50 flex items-center justify-center">
+        <Spin size="large" />
+      </div>
+    )
+  }
 
   return (
     <div className="min-h-screen bg-gray-50 p-8">
-      <div className="max-w-4xl mx-auto">
+      <div className="max-w-7xl mx-auto">
         <div className="flex justify-between items-center mb-8">
           <h1 className="text-3xl font-bold">Photo Upload App</h1>
-          {session && (
+          {effectiveSession && (
             <div className="flex items-center gap-4">
               <span className="text-gray-600">
-                Welcome, {session.user?.name}
+                Welcome, {effectiveSession.user?.name}
               </span>
               <LogoutButton />
             </div>
           )}
         </div>
 
-        {session ? (
-          <div className="space-y-6">
+        {effectiveSession ? (
+          <div className="space-y-8">
             <div className="bg-white p-6 rounded-lg shadow">
               <h2 className="text-xl font-semibold mb-4">Upload a Photo</h2>
-              <PhotoUploadForm />
+              <PhotoUploadForm
+                onUploadSuccess={() => setPhotoUpdateTrigger((prev) => prev + 1)}
+              />
+            </div>
+
+            <div>
+              <h2 className="text-2xl font-semibold mb-4">Photo Gallery</h2>
+              <PhotoGrid onPhotoUpdate={photoUpdateTrigger} />
             </div>
           </div>
         ) : (
