@@ -1,9 +1,9 @@
 "use client"
 
-import { useEffect, useState } from "react"
 import { Avatar, Spin, Empty } from "antd"
 import { UserOutlined } from "@ant-design/icons"
 import { formatDistanceToNow } from "date-fns"
+import { useQuery } from "@tanstack/react-query"
 import { fetchWithError } from "@/lib/fetch-with-error"
 
 type Comment = {
@@ -18,28 +18,21 @@ type Comment = {
 }
 
 export default function CommentList({ photoId }: { photoId: string }) {
-  const [comments, setComments] = useState<Comment[]>([])
-  const [loading, setLoading] = useState(true)
+  const { data, isLoading } = useQuery({
+    queryKey: ["comments", photoId],
+    queryFn: async () => {
+      const result = await fetchWithError<{
+        photo: { comments: Comment[] }
+      }>(`/api/photos/${photoId}`, { showErrorMessage: false })
+      return result.photo.comments
+    },
+    refetchInterval: 5000, // Poll every 5 seconds
+    staleTime: 4000, // Consider data stale after 4 seconds
+  })
 
-  useEffect(() => {
-    const fetchComments = async () => {
-      try {
-        const data = await fetchWithError<{
-          photo: { comments: Comment[] }
-        }>(`/api/photos/${photoId}`, { showErrorMessage: false })
-        setComments(data.photo.comments)
-      } catch (error) {
-        console.error("Error fetching comments:", error)
-        setComments([])
-      } finally {
-        setLoading(false)
-      }
-    }
+  const comments = data || []
 
-    fetchComments()
-  }, [photoId])
-
-  if (loading) {
+  if (isLoading) {
     return (
       <div className="flex justify-center py-4">
         <Spin />

@@ -3,6 +3,7 @@
 import { useState } from "react"
 import { Card, Avatar, Modal } from "antd"
 import { CommentOutlined, UserOutlined } from "@ant-design/icons"
+import { useQueryClient } from "@tanstack/react-query"
 import Image from "next/image"
 import CommentList from "../comments/CommentList"
 import CommentForm from "../comments/CommentForm"
@@ -32,7 +33,7 @@ export default function PhotoCard({
   onCommentAdded?: () => void
 }) {
   const [isModalOpen, setIsModalOpen] = useState(false)
-  const [commentRefreshKey, setCommentRefreshKey] = useState(0)
+  const queryClient = useQueryClient()
 
   return (
     <>
@@ -112,12 +113,15 @@ export default function PhotoCard({
           />
           <div className="border-t pt-4">
             <h3 className="text-lg font-semibold mb-4">Comments</h3>
-            <CommentList key={commentRefreshKey} photoId={photo.id} />
+            <CommentList photoId={photo.id} />
             <div className="mt-4">
               <CommentForm
                 photoId={photo.id}
                 onCommentAdded={() => {
-                  setCommentRefreshKey((prev) => prev + 1)
+                  // Invalidate comments query to trigger immediate refetch
+                  queryClient.invalidateQueries({ queryKey: ["comments", photo.id] })
+                  // Also invalidate photos query to update comment count
+                  queryClient.invalidateQueries({ queryKey: ["photos"] })
                   onCommentAdded?.()
                 }}
               />
