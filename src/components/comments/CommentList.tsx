@@ -60,9 +60,12 @@ export default function CommentList({ photoId }: { photoId: string }) {
             )}
           </div>
           <div className="flex-1 min-w-0">
-            <div className="font-semibold text-sm">
+            <a
+              href={`/profile/${comment.user.id}`}
+              className="font-semibold text-sm hover:text-blue-600 hover:underline"
+            >
               {comment.user.name || "Unknown User"}
-            </div>
+            </a>
             <div className="text-gray-700 mt-1">{comment.content}</div>
             <div className="text-gray-400 text-xs mt-1">
               {formatDistanceToNow(new Date(comment.createdAt), {

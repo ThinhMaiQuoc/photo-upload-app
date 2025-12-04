@@ -39,9 +39,12 @@ export default function Home() {
           <h1 className="text-3xl font-bold">Photo Upload App</h1>
           {effectiveSession && (
             <div className="flex items-center gap-4">
-              <span className="text-gray-600">
-                Welcome, {effectiveSession.user?.name}
-              </span>
+              <a
+                href={`/profile/${effectiveSession.user?.id}`}
+                className="text-blue-600 hover:text-blue-800 hover:underline"
+              >
+                {effectiveSession.user?.name}
+              </a>
               <LogoutButton />
             </div>
           )}

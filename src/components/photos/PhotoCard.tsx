@@ -59,7 +59,15 @@ export default function PhotoCard({
             )
           }
           title={photo.title || "Untitled"}
-          description={photo.uploadedBy.name || "Unknown"}
+          description={
+            <a
+              href={`/profile/${photo.uploadedBy.id}`}
+              className="text-gray-600 hover:text-blue-600 hover:underline"
+              onClick={(e) => e.stopPropagation()}
+            >
+              {photo.uploadedBy.name || "Unknown"}
+            </a>
+          }
         />
         <div className="mt-2 text-gray-500 text-sm">
           <CommentOutlined /> {photo._count.comments} comments
@@ -90,7 +98,17 @@ export default function PhotoCard({
               )
             }
             title={photo.title || "Untitled"}
-            description={`By ${photo.uploadedBy.name || "Unknown"}`}
+            description={
+              <span>
+                By{" "}
+                <a
+                  href={`/profile/${photo.uploadedBy.id}`}
+                  className="text-gray-600 hover:text-blue-600 hover:underline"
+                >
+                  {photo.uploadedBy.name || "Unknown"}
+                </a>
+              </span>
+            }
           />
           <div className="border-t pt-4">
             <h3 className="text-lg font-semibold mb-4">Comments</h3>

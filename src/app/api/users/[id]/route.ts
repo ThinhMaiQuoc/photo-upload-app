@@ -15,6 +15,12 @@ export async function GET(
         email: true,
         image: true,
         createdAt: true,
+        _count: {
+          select: {
+            photos: true,
+            comments: true,
+          },
+        },
         photos: {
           select: {
             id: true,
@@ -22,6 +28,22 @@ export async function GET(
             filename: true,
             createdAt: true,
           },
+          orderBy: { createdAt: "desc" },
+        },
+        comments: {
+          select: {
+            id: true,
+            content: true,
+            createdAt: true,
+            photo: {
+              select: {
+                id: true,
+                title: true,
+                filename: true,
+              },
+            },
+          },
+          orderBy: { createdAt: "desc" },
         },
       },
     })
