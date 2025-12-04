@@ -1,7 +1,7 @@
 "use client"
 
-import { useEffect, useState } from "react"
 import { Row, Col, Spin, Empty } from "antd"
+import { useQuery } from "@tanstack/react-query"
 import PhotoCard from "./PhotoCard"
 import { fetchWithError } from "@/lib/fetch-with-error"
 
@@ -25,29 +25,26 @@ export default function PhotoGrid({
 }: {
   onPhotoUpdate?: number
 }) {
-  const [photos, setPhotos] = useState<Photo[]>([])
-  const [loading, setLoading] = useState(true)
-
-  const fetchPhotos = async () => {
-    try {
-      const data = await fetchWithError<{ photos: Photo[] }>(
+  const {
+    data,
+    isLoading,
+    refetch,
+  } = useQuery({
+    queryKey: ["photos", onPhotoUpdate],
+    queryFn: async () => {
+      const result = await fetchWithError<{ photos: Photo[] }>(
         "/api/photos",
         { showErrorMessage: false }
       )
-      setPhotos(data.photos)
-    } catch (error) {
-      console.error("Error fetching photos:", error)
-      setPhotos([])
-    } finally {
-      setLoading(false)
-    }
-  }
+      return result.photos
+    },
+    refetchInterval: 5000, // Poll every 5 seconds
+    staleTime: 4000, // Consider data stale after 4 seconds
+  })
 
-  useEffect(() => {
-    fetchPhotos()
-  }, [onPhotoUpdate])
+  const photos = data || []
 
-  if (loading) {
+  if (isLoading) {
     return (
       <div className="flex justify-center py-12">
         <Spin size="large" />
@@ -63,7 +60,7 @@ export default function PhotoGrid({
     <Row gutter={[16, 16]}>
       {photos.map((photo) => (
         <Col xs={24} sm={12} md={8} lg={6} key={photo.id}>
-          <PhotoCard photo={photo} onCommentAdded={fetchPhotos} />
+          <PhotoCard photo={photo} onCommentAdded={() => refetch()} />
         </Col>
       ))}
     </Row>

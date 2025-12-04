@@ -36,7 +36,7 @@ export default function Home() {
     <div className="min-h-screen bg-gray-50 p-8">
       <div className="max-w-7xl mx-auto">
         <div className="flex justify-between items-center mb-8">
-          <h1 className="text-3xl font-bold">Photo Upload App</h1>
+          <h1 className="text-3xl font-bold text-gray-900">Photo Upload App</h1>
           {effectiveSession && (
             <div className="flex items-center gap-4">
               <a
@@ -53,14 +53,14 @@ export default function Home() {
         {effectiveSession ? (
           <div className="space-y-8">
             <div className="bg-white p-6 rounded-lg shadow">
-              <h2 className="text-xl font-semibold mb-4">Upload a Photo</h2>
+              <h2 className="text-xl font-semibold mb-4 text-gray-900">Upload a Photo</h2>
               <PhotoUploadForm
                 onUploadSuccess={() => setPhotoUpdateTrigger((prev) => prev + 1)}
               />
             </div>
 
             <div>
-              <h2 className="text-2xl font-semibold mb-4">Photo Gallery</h2>
+              <h2 className="text-2xl font-semibold mb-4 text-gray-900">Photo Gallery</h2>
               <PhotoGrid onPhotoUpdate={photoUpdateTrigger} />
             </div>
           </div>

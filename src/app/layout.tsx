@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import { Geist, Geist_Mono } from "next/font/google";
 import { AntdRegistry } from "@ant-design/nextjs-registry";
 import SessionProvider from "@/components/providers/SessionProvider";
+import QueryProvider from "@/components/providers/QueryProvider";
 import { ErrorBoundary } from "@/components/ErrorBoundary";
 import "./globals.css";
 
@@ -32,7 +33,9 @@ export default function RootLayout({
       >
         <ErrorBoundary>
           <SessionProvider>
-            <AntdRegistry>{children}</AntdRegistry>
+            <QueryProvider>
+              <AntdRegistry>{children}</AntdRegistry>
+            </QueryProvider>
           </SessionProvider>
         </ErrorBoundary>
       </body>
