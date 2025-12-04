@@ -1,6 +1,7 @@
 import { getServerSession } from "next-auth/next"
 import { authOptions } from "@/lib/auth"
 import LogoutButton from "@/components/auth/LogoutButton"
+import PhotoUploadForm from "@/components/photos/PhotoUploadForm"
 
 export default async function Home() {
   const session = await getServerSession(authOptions)
@@ -21,9 +22,11 @@ export default async function Home() {
         </div>
 
         {session ? (
-          <div className="bg-white p-6 rounded-lg shadow">
-            <h2 className="text-xl font-semibold mb-4">You are logged in!</h2>
-            <p className="text-gray-600">More features coming soon...</p>
+          <div className="space-y-6">
+            <div className="bg-white p-6 rounded-lg shadow">
+              <h2 className="text-xl font-semibold mb-4">Upload a Photo</h2>
+              <PhotoUploadForm />
+            </div>
           </div>
         ) : (
           <div className="bg-white p-6 rounded-lg shadow text-center">
