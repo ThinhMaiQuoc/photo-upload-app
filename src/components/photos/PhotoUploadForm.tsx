@@ -3,6 +3,7 @@
 import { useState } from "react"
 import { Upload, message, Input } from "antd"
 import { InboxOutlined } from "@ant-design/icons"
+import { useQueryClient } from "@tanstack/react-query"
 import type { UploadProps } from "antd"
 import { validatePhoto } from "@/lib/validation/photo"
 
@@ -15,6 +16,7 @@ export default function PhotoUploadForm({
 }) {
   const [uploading, setUploading] = useState(false)
   const [title, setTitle] = useState("")
+  const queryClient = useQueryClient()
 
   const uploadProps: UploadProps = {
     name: "photo",
@@ -58,6 +60,8 @@ export default function PhotoUploadForm({
         const data = await response.json()
         onSuccess?.(data)
         setTitle("")
+        // Invalidate photos query to trigger immediate refetch
+        queryClient.invalidateQueries({ queryKey: ["photos"] })
         onUploadSuccess?.()
       } catch (error) {
         message.error(
