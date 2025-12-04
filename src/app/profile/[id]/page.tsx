@@ -6,6 +6,7 @@ import { UserOutlined } from "@ant-design/icons"
 import { useParams } from "next/navigation"
 import Image from "next/image"
 import { formatDistanceToNow } from "date-fns"
+import { fetchWithError } from "@/lib/fetch-with-error"
 
 type User = {
   id: string
@@ -48,13 +49,15 @@ export default function ProfilePage() {
   useEffect(() => {
     const fetchUserData = async () => {
       try {
-        const response = await fetch(`/api/users/${userId}`)
-        const data = await response.json()
+        const data = await fetchWithError<{
+          user: User & { photos: Photo[]; comments: Comment[] }
+        }>(`/api/users/${userId}`, { showErrorMessage: false })
         setUser(data.user)
         setPhotos(data.user.photos)
         setComments(data.user.comments)
       } catch (error) {
         console.error("Error fetching user data:", error)
+        setUser(null)
       } finally {
         setLoading(false)
       }

@@ -1,8 +1,10 @@
+import { sanitizeInput } from "../sanitize"
+
 const MAX_COMMENT_LENGTH = 500
 
 export function validateComment(
   content: string
-): { valid: boolean; error?: string } {
+): { valid: boolean; error?: string; sanitized?: string } {
   if (!content || content.trim().length === 0) {
     return { valid: false, error: "Comment cannot be empty" }
   }
@@ -14,5 +16,7 @@ export function validateComment(
     }
   }
 
-  return { valid: true }
+  const sanitized = sanitizeInput(content)
+
+  return { valid: true, sanitized }
 }

@@ -3,6 +3,7 @@
 import { useEffect, useState } from "react"
 import { Row, Col, Spin, Empty } from "antd"
 import PhotoCard from "./PhotoCard"
+import { fetchWithError } from "@/lib/fetch-with-error"
 
 type Photo = {
   id: string
@@ -29,11 +30,14 @@ export default function PhotoGrid({
 
   const fetchPhotos = async () => {
     try {
-      const response = await fetch("/api/photos")
-      const data = await response.json()
+      const data = await fetchWithError<{ photos: Photo[] }>(
+        "/api/photos",
+        { showErrorMessage: false }
+      )
       setPhotos(data.photos)
     } catch (error) {
       console.error("Error fetching photos:", error)
+      setPhotos([])
     } finally {
       setLoading(false)
     }

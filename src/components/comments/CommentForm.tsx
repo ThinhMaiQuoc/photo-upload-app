@@ -2,6 +2,7 @@
 
 import { useState } from "react"
 import { Input, Button, message } from "antd"
+import { fetchWithError } from "@/lib/fetch-with-error"
 
 const { TextArea } = Input
 
@@ -28,27 +29,20 @@ export default function CommentForm({
 
     setLoading(true)
     try {
-      const response = await fetch(`/api/photos/${photoId}/comments`, {
+      await fetchWithError(`/api/photos/${photoId}/comments`, {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
         },
         body: JSON.stringify({ content }),
+        showErrorMessage: true,
       })
-
-      const data = await response.json()
-
-      if (!response.ok) {
-        throw new Error(data.error || "Failed to add comment")
-      }
 
       message.success("Comment added successfully")
       setContent("")
       onCommentAdded?.()
     } catch (error) {
-      message.error(
-        error instanceof Error ? error.message : "Failed to add comment"
-      )
+      console.error("Error adding comment:", error)
     } finally {
       setLoading(false)
     }

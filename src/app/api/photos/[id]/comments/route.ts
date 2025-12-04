@@ -33,7 +33,7 @@ export async function POST(
 
     const comment = await prisma.comment.create({
       data: {
-        content,
+        content: validation.sanitized || content,
         photoId,
         userId: session!.user.id,
       },

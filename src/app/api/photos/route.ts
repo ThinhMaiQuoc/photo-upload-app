@@ -3,6 +3,7 @@ import { put } from "@vercel/blob"
 import { requireAuth } from "@/lib/middleware/auth"
 import { prisma } from "@/lib/prisma"
 import { validatePhotoServer } from "@/lib/validation/photo"
+import { sanitizeInput } from "@/lib/sanitize"
 
 export async function POST(request: Request) {
   const { error, session } = await requireAuth()
@@ -30,9 +31,11 @@ export async function POST(request: Request) {
       access: "public",
     })
 
+    const sanitizedTitle = title ? sanitizeInput(title) : null
+
     const photo = await prisma.photo.create({
       data: {
-        title: title || null,
+        title: sanitizedTitle,
         filename: blob.url,
         uploadedById: session!.user.id,
       },

@@ -4,6 +4,7 @@ import { useEffect, useState } from "react"
 import { Avatar, Spin, Empty } from "antd"
 import { UserOutlined } from "@ant-design/icons"
 import { formatDistanceToNow } from "date-fns"
+import { fetchWithError } from "@/lib/fetch-with-error"
 
 type Comment = {
   id: string
@@ -23,11 +24,13 @@ export default function CommentList({ photoId }: { photoId: string }) {
   useEffect(() => {
     const fetchComments = async () => {
       try {
-        const response = await fetch(`/api/photos/${photoId}`)
-        const data = await response.json()
+        const data = await fetchWithError<{
+          photo: { comments: Comment[] }
+        }>(`/api/photos/${photoId}`, { showErrorMessage: false })
         setComments(data.photo.comments)
       } catch (error) {
         console.error("Error fetching comments:", error)
+        setComments([])
       } finally {
         setLoading(false)
       }
