@@ -3,8 +3,19 @@ import { authOptions } from "@/lib/auth"
 import LogoutButton from "@/components/auth/LogoutButton"
 import PhotoUploadForm from "@/components/photos/PhotoUploadForm"
 
+const isPreview = process.env.VERCEL_ENV === "preview"
+
 export default async function Home() {
-  const session = await getServerSession(authOptions)
+  const session = isPreview
+    ? {
+        user: {
+          id: "preview-user",
+          name: "Preview User",
+          email: "preview@example.com",
+          image: null,
+        },
+      }
+    : await getServerSession(authOptions)
 
   return (
     <div className="min-h-screen bg-gray-50 p-8">
